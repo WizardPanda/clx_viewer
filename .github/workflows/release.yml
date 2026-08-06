@@ -1,0 +1,49 @@
+name: release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout (with submodules)
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: Set up MSVC environment
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Configure native build (static CRT)
+        run: cmake -S . -B build-native -G Ninja -DCMAKE_BUILD_TYPE=Release -DCLXCPP_BUILD_TESTS=OFF -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded
+
+      - name: Build native (clxreader + thumbnail provider)
+        run: cmake --build build-native
+
+      - name: Extract version from tag
+        id: version
+        shell: pwsh
+        run: echo "ver=$($env:GITHUB_REF_NAME -replace '^v','')" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+
+      - name: Install Inno Setup
+        shell: pwsh
+        run: choco install innosetup --no-progress -y
+
+      - name: Build installers + portable zips (FD + SC)
+        shell: pwsh
+        run: ./installer/prepare.ps1 -AppVersion "${{ steps.version.outputs.ver }}" -SkipNative
+
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/ClxViewer-*-installer.exe
+            dist/ClxViewer-*-portable.zip
+          generate_release_notes: true

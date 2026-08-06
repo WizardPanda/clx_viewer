@@ -18,11 +18,12 @@ if (-not (Test-Path -LiteralPath $vcvars)) {
     throw "vcvars64.bat not found"
 }
 
-# 1. Native build (clxreader + thumbnail provider, linked to clxcpp)
+# 1. Native build (clxreader + thumbnail provider, linked to clxcpp).
+#    Static CRT (/MT) so the DLLs need no VC++ redistributable at runtime.
 if (-not $SkipNative) {
     Push-Location $root
     try {
-        cmd /c "call `"$vcvars`" >nul 2>&1 && cmake -S . -B $BuildDir -G Ninja -DCMAKE_BUILD_TYPE=$Config -DCLXCPP_BUILD_TESTS=OFF"
+        cmd /c "call `"$vcvars`" >nul 2>&1 && cmake -S . -B $BuildDir -G Ninja -DCMAKE_BUILD_TYPE=$Config -DCLXCPP_BUILD_TESTS=OFF -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded"
         if ($LASTEXITCODE -ne 0) { throw "cmake configure failed" }
         cmd /c "call `"$vcvars`" >nul 2>&1 && cmake --build $BuildDir"
         if ($LASTEXITCODE -ne 0) { throw "cmake build failed" }

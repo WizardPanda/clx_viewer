@@ -6,6 +6,9 @@ build/
 viewer/bin/
 viewer/obj/
 
+# Release artifacts
+dist/
+
 # Misc
 *.user
 *.obj

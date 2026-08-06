@@ -38,21 +38,43 @@ own files.
 
 - Windows 10/11 (x64)
 - VS 2022 Build Tools (MSVC + CMake + Ninja)
-- .NET 8 SDK
+- .NET 8 SDK (only needed to build; the self-contained installer bundles the runtime)
 - The `clinx_format_cpp` submodule
 
-## Build & run
+## Install from a release
+
+Prebuilt artifacts are attached to each [GitHub release](https://github.com/WizardPanda/clx_viewer/releases):
+
+| Artifact | What it is |
+|---|---|
+| `*-fd-installer.exe` | Per-user installer; requires the .NET 8 Desktop Runtime (installs it automatically if missing) |
+| `*-sc-installer.exe` | Per-user installer that bundles the .NET 8 runtime (no dependency) |
+| `*-fd-portable.zip` | Portable folder; needs the .NET 8 Desktop Runtime |
+| `*-sc-portable.zip` | Portable folder with the .NET 8 runtime bundled |
+
+Installers register the Explorer thumbnail handler and the `.clx` file association
+under the current user (no admin) and ship a proper uninstaller. The portable
+zips include `register-portable.ps1` / `unregister-portable.ps1` for optional
+shell integration.
+
+## Build from source
 
 ```powershell
 git submodule update --init --recursive
 .\tools\build.ps1          # native + WPF viewer; stages clxreader.dll next to the exe
-.\tools\register.ps1       # Explorer thumbnail handler + .clx file association
 .\viewer\bin\x64\Release\net8.0-windows\ClxViewer.exe  <capture.clx>
 ```
 
-Run `.\tools\unregister.ps1` to undo the shell integration.
+Run `.\tools\register.ps1` to set up shell integration (or
+`.\tools\unregister.ps1` to undo it).
 
-### Artifacts
+### Release artifacts (installers + portable zips)
+
+```powershell
+.\installer\prepare.ps1 -AppVersion 1.0.0   # builds FD/SC installers + portable zips into .\dist
+```
+
+### Build artifacts
 
 | Artifact | Location |
 |---|---|
