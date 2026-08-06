@@ -4,7 +4,9 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
+using System.Windows.Threading;
 using ClxViewer.Services;
 using Microsoft.Win32;
 
@@ -436,6 +438,7 @@ public partial class MainWindow : Window
         if (dlg.ShowDialog(this) == true)
         {
             _customExportDir = dlg.FolderName;
+            ShowToast($"Export folder → {_customExportDir}");
         }
         UpdateStatus();
     }
@@ -463,6 +466,7 @@ public partial class MainWindow : Window
             written.Add(path);
         }
         StatusExport.Text = $"Raw TIFF → {dir} ({written.Count} file(s))";
+        ShowToast($"Exported {written.Count} raw TIFF file(s) → {Path.GetFileName(dir)}");
         return written;
     }
 
@@ -505,6 +509,7 @@ public partial class MainWindow : Window
             return null;
         }
         StatusExport.Text = $"PNG → {path}";
+        ShowToast($"PNG exported → {Path.GetFileName(path)}");
         return path;
     }
 
@@ -789,6 +794,30 @@ public partial class MainWindow : Window
         {
             OpenFiles(files);
         }
+    }
+
+    private DispatcherTimer? _toastTimer;
+
+    /// <summary>Shows a short, non-blocking toast at the bottom-right of the window.</summary>
+    private void ShowToast(string message)
+    {
+        ToastText.Text = message;
+        Toast.RenderTransform = new TranslateTransform(0, 14);
+        Toast.Visibility = Visibility.Visible;
+        Toast.BeginAnimation(OpacityProperty, new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(180)) { EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut } });
+        Toast.RenderTransform.BeginAnimation(TranslateTransform.YProperty,
+            new DoubleAnimation(14, 0, TimeSpan.FromMilliseconds(180)) { EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut } });
+
+        _toastTimer?.Stop();
+        _toastTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(2.5) };
+        _toastTimer.Tick += (_, _) =>
+        {
+            _toastTimer.Stop();
+            var fade = new DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(280)) { EasingFunction = new CubicEase { EasingMode = EasingMode.EaseIn } };
+            fade.Completed += (_, _) => Toast.Visibility = Visibility.Collapsed;
+            Toast.BeginAnimation(OpacityProperty, fade);
+        };
+        _toastTimer.Start();
     }
 
     private void OnPreviewKeyDown(object sender, KeyEventArgs e)

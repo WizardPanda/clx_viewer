@@ -658,5 +658,17 @@
                 </StackPanel>
             </Grid>
         </Border>
+
+        <!-- Non-blocking toast notification -->
+        <Border x:Name="Toast" Grid.RowSpan="5" HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                Background="#2B2B30" BorderBrush="{StaticResource BrBorder}" BorderThickness="1"
+                CornerRadius="6" Padding="14,10" Margin="0,0,18,16"
+                Opacity="0" Visibility="Collapsed" IsHitTestVisible="False">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="&#xE73E;" FontFamily="Segoe MDL2 Assets" Foreground="#4CAF50" VerticalAlignment="Center"/>
+                <TextBlock x:Name="ToastText" Text="" Foreground="{StaticResource BrText0}" FontSize="12"
+                           Margin="8,0,0,0" VerticalAlignment="Center" MaxWidth="560" TextTrimming="CharacterEllipsis"/>
+            </StackPanel>
+        </Border>
     </Grid>
 </Window>
