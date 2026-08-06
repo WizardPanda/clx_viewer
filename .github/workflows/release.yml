@@ -47,3 +47,49 @@ jobs:
             dist/ClxViewer-*-installer.exe
             dist/ClxViewer-*-portable.zip
           generate_release_notes: true
+
+  # .NET Framework 4.8 variant (net48 branch): builds the native DLLs and the
+  # net48 viewer, zips a portable build and attaches it to the same release.
+  build-net48:
+    needs: build
+    runs-on: windows-latest
+    steps:
+      - name: Checkout net48 (with submodules)
+        uses: actions/checkout@v4
+        with:
+          ref: net48
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: Set up MSVC environment
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Configure native build (static CRT)
+        run: cmake -S . -B build-native -G Ninja -DCMAKE_BUILD_TYPE=Release -DCLXCPP_BUILD_TESTS=OFF -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded
+
+      - name: Build native (clxreader + thumbnail provider)
+        run: cmake --build build-native
+
+      - name: Build net48 viewer
+        run: dotnet build viewer/ClxViewer.csproj -c Release -p:Platform=x64
+
+      - name: Extract version from tag
+        id: version
+        shell: pwsh
+        run: echo "ver=$($env:GITHUB_REF_NAME -replace '^v','')" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+
+      - name: Stage portable net48 build
+        id: stage
+        shell: pwsh
+        run: |
+          $out = "viewer\bin\x64\Release\net48"
+          Copy-Item build-native\bin\clxreader.dll $out
+          Copy-Item build-native\bin\ClinxThumbnailProvider.dll $out
+          Copy-Item installer\register-portable.ps1 $out
+          Copy-Item installer\unregister-portable.ps1 $out
+          $zip = "ClxViewer-${{ steps.version.outputs.ver }}-win-x64-net48-portable.zip"
+          Compress-Archive -Path "$out\*" -DestinationPath $zip -CompressionLevel Optimal
+          echo "zip=$zip" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+
+      - name: Upload net48 portable to release
+        run: gh release upload "${{ github.ref_name }}" "${{ steps.stage.outputs.zip }}" --clobber
