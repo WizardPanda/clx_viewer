@@ -38,7 +38,8 @@ own files.
 
 - Windows 10/11 (x64)
 - VS 2022 Build Tools (MSVC + CMake + Ninja)
-- .NET 8 SDK
+- .NET Framework 4.8 — preinstalled on Windows 10/11; the viewer targets it, so
+  users don't need to install a separate runtime
 - The `clinx_format_cpp` submodule
 
 ## Build & run
@@ -47,7 +48,7 @@ own files.
 git submodule update --init --recursive
 .\tools\build.ps1          # native + WPF viewer; stages clxreader.dll next to the exe
 .\tools\register.ps1       # Explorer thumbnail handler + .clx file association
-.\viewer\bin\x64\Release\net8.0-windows\ClxViewer.exe  <capture.clx>
+.\viewer\bin\x64\Release\net48\ClxViewer.exe  <capture.clx>
 ```
 
 Run `.\tools\unregister.ps1` to undo the shell integration.
@@ -56,7 +57,7 @@ Run `.\tools\unregister.ps1` to undo the shell integration.
 
 | Artifact | Location |
 |---|---|
-| Viewer | `viewer\bin\x64\Release\net8.0-windows\ClxViewer.exe` |
+| Viewer | `viewer\bin\x64\Release\net48\ClxViewer.exe` |
 | Native reader | `build-native\bin\clxreader.dll` (also copied next to the exe) |
 | Thumbnail provider | `build-native\bin\ClinxThumbnailProvider.dll` |
 
@@ -101,7 +102,7 @@ icon overlay per the global **"Display file icon on thumbnails"** folder option.
 native/clxreader/       C-ABI DLL over clxcpp (clxreader.dll)
 native/shellext/        COM IThumbnailProvider (ClinxThumbnailProvider.dll)
 third_party/clinx_format_cpp/   clxcpp parser (git submodule)
-viewer/                 .NET 8 WPF application
+viewer/                 WPF application (targets .NET Framework 4.8)
 tools/                  build / register / unregister / refresh-thumbnails / icon scripts
 assets/                 brand icon
 docs/                   screenshot
@@ -123,3 +124,4 @@ TIFFs.
   all three views without showing the window.
 - The `.clx` format is reverse-engineered (see `clinx_format_cpp/docs`); it is
   validated against real instrument samples in the clxcpp test suite.
+

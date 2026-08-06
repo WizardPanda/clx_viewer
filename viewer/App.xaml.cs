@@ -76,7 +76,7 @@ public partial class App : Application
                     if (n > 0)
                     {
                         string text = Encoding.UTF8.GetString(buffer, 0, n);
-                        var paths = text.Split('\n', StringSplitOptions.RemoveEmptyEntries)
+                        var paths = text.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries)
                             .Where(p => p.EndsWith(".clx", StringComparison.OrdinalIgnoreCase))
                             .ToList();
                         if (paths.Count > 0)
@@ -111,7 +111,7 @@ public partial class App : Application
         {
             using var client = new NamedPipeClientStream(".", PipeName, PipeDirection.Out);
             client.Connect(3000);
-            byte[] data = Encoding.UTF8.GetBytes(string.Join('\n', paths));
+            byte[] data = Encoding.UTF8.GetBytes(string.Join("\n", paths));
             client.Write(data, 0, data.Length);
         }
         catch

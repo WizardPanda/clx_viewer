@@ -1,7 +1,19 @@
 namespace ClxViewer.Services;
 
 /// <summary>A windowing target: raw low/high plus an optional display gain.</summary>
-public readonly record struct Levels(double Low, double High, double Gain);
+public readonly struct Levels
+{
+    public readonly double Low;
+    public readonly double High;
+    public readonly double Gain;
+
+    public Levels(double low, double high, double gain)
+    {
+        Low = low;
+        High = high;
+        Gain = gain;
+    }
+}
 
 /// <summary>
 /// Auto min/max computation. Shares the exact constants with the native

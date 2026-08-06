@@ -1,6 +1,7 @@
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
+using ClxViewer.Services;
 
 namespace ClxViewer.Controls;
 
@@ -72,7 +73,7 @@ public class DualRangeSlider : FrameworkElement
     private double XToValue(double x)
     {
         double t = (x - TrackLeft) / (TrackRight - TrackLeft);
-        t = Math.Clamp(t, 0.0, 1.0);
+        t = MathEx.Clamp(t, 0.0, 1.0);
         return DataMin + t * (DataMax - DataMin);
     }
 
@@ -84,8 +85,8 @@ public class DualRangeSlider : FrameworkElement
         const double trackH = 4.0;
         double trackY = mid - trackH / 2.0;
 
-        double lx = Math.Clamp(ValueToX(LowValue), left, right);
-        double hx = Math.Clamp(ValueToX(HighValue), left, right);
+        double lx = MathEx.Clamp(ValueToX(LowValue), left, right);
+        double hx = MathEx.Clamp(ValueToX(HighValue), left, right);
 
         // Track
         dc.DrawRoundedRectangle(new SolidColorBrush(Color.FromRgb(0x2E, 0x2E, 0x33)),
@@ -241,3 +242,5 @@ public class DualRangeSlider : FrameworkElement
     protected override Size MeasureOverride(Size availableSize)
         => new Size(0, 26);
 }
+
+

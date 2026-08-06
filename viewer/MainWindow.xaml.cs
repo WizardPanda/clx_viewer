@@ -1,8 +1,9 @@
 using System.IO;
-using System.Text.Json;
+
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
@@ -274,8 +275,8 @@ public partial class MainWindow : Window
             ViewMode.Bright => _bfLevels,
             _ => _sliderChannel == 0 ? _bfLevels : _fluoLevels,
         };
-        RangeSlider.LowValue = Math.Clamp(lv.Low, 0, ch.DataMax);
-        RangeSlider.HighValue = Math.Clamp(lv.High, 0, ch.DataMax);
+        RangeSlider.LowValue = MathEx.Clamp(lv.Low, 0, ch.DataMax);
+        RangeSlider.HighValue = MathEx.Clamp(lv.High, 0, ch.DataMax);
     }
 
     private void UpdateReadouts()
@@ -330,8 +331,8 @@ public partial class MainWindow : Window
         if (!long.TryParse(MinBox.Text, out long lo)) lo = 0;
         if (!long.TryParse(MaxBox.Text, out long hi)) hi = 0;
         var ch = TargetChannel();
-        lo = Math.Clamp(lo, 0, ch.DataMax);
-        hi = Math.Clamp(hi, 0, ch.DataMax);
+        lo = MathEx.Clamp(lo, 0, ch.DataMax);
+        hi = MathEx.Clamp(hi, 0, ch.DataMax);
         if (lo > hi) (lo, hi) = (hi, lo);
         double gain = _view == ViewMode.Fluo && _fluoAuto ? _fluoLevels.Gain : 1.0;
         if (_view == ViewMode.Merged && _sliderChannel == 1 && _fluoAuto) gain = _fluoLevels.Gain;
@@ -434,10 +435,12 @@ public partial class MainWindow : Window
 
     private void OnChooseExportDir(object sender, RoutedEventArgs e)
     {
-        var dlg = new OpenFolderDialog { Title = "Export folder (blank = next to the .clx file)" };
-        if (dlg.ShowDialog(this) == true)
+        var folder = ModernFolderPicker.PickFolder(
+            new WindowInteropHelper(this).Handle,
+            "Export folder (blank = next to the .clx file)");
+        if (folder != null)
         {
-            _customExportDir = dlg.FolderName;
+            _customExportDir = folder;
             ShowToast($"Export folder → {_customExportDir}");
         }
         UpdateStatus();
@@ -565,10 +568,13 @@ public partial class MainWindow : Window
         var json = ClxReaderNative.MetadataJson(_handle);
         try
         {
-            using var doc = JsonDocument.Parse(json);
-            var root = doc.RootElement;
-            string Get(string name) =>
-                root.TryGetProperty(name, out var p) ? p.ValueKind == JsonValueKind.String ? p.GetString() ?? "" : p.ToString() : "";
+            var root = MiniJson.Parse(json);
+
+            static string StrOf(object? v) =>
+                v is string s ? s :
+                v is double d ? d.ToString(System.Globalization.CultureInfo.InvariantCulture) :
+                v is bool b ? (b ? "True" : "False") : "";
+            string Get(string name) => root != null && root.TryGetValue(name, out var v) ? StrOf(v) : "";
 
             string file = Path.GetFileName(_sourcePath);
             string sample = Get("sample_name");
@@ -587,36 +593,40 @@ public partial class MainWindow : Window
             AddMetaRow("File size", FormatBytes(new FileInfo(_sourcePath).Length));
             AddMetaRow("Folder", Path.GetDirectoryName(_sourcePath) ?? "");
 
-            if (root.TryGetProperty("filename_info", out var fi) && fi.ValueKind == JsonValueKind.Object)
+            var fi = root != null && root.TryGetValue("filename_info", out var fv) ? MiniJson.Obj(fv) : null;
+            if (fi != null)
             {
-                AddMetaRow("Filename sample", fi.TryGetProperty("sample", out var s) ? s.GetString() ?? "" : "");
-                AddMetaRow("Filename capture", fi.TryGetProperty("capture_time", out var c) && c.ValueKind == JsonValueKind.String ? c.GetString() ?? "" : "");
+                AddMetaRow("Filename sample", fi.TryGetValue("sample", out var s) && s is string ss ? ss : "");
+                AddMetaRow("Filename capture", fi.TryGetValue("capture_time", out var c) && c is string cc ? cc : "");
             }
 
-            if (root.TryGetProperty("images", out var imgs) && imgs.ValueKind == JsonValueKind.Array)
+            var imgs = root != null && root.TryGetValue("images", out var iv) ? MiniJson.Arr(iv) : null;
+            if (imgs != null)
             {
-                AddMetaRow("Images", imgs.GetArrayLength().ToString());
-                foreach (var im in imgs.EnumerateArray())
+                AddMetaRow("Images", imgs.Count.ToString());
+                foreach (var item in imgs)
                 {
-                    long w = im.TryGetProperty("width", out var wp) ? wp.GetInt64() : 0;
-                    long h = im.TryGetProperty("height", out var hp) ? hp.GetInt64() : 0;
-                    long bits = im.TryGetProperty("bits_per_sample", out var bp) ? bp.GetInt64() : 0;
-                    long mn = im.TryGetProperty("min_value", out var mnp) ? mnp.GetInt64() : 0;
-                    long mx = im.TryGetProperty("max_value", out var mxp) ? mxp.GetInt64() : 0;
-                    long typ = im.TryGetProperty("type", out var tp) ? tp.GetInt64() : 0;
-                    long idx = im.TryGetProperty("index", out var ip) ? ip.GetInt64() : 0;
+                    var im = MiniJson.Obj(item);
+                    if (im == null) continue;
+                    long w = MiniJson.Num(im.TryGetValue("width", out var wp) ? wp : null);
+                    long h = MiniJson.Num(im.TryGetValue("height", out var hp) ? hp : null);
+                    long bits = MiniJson.Num(im.TryGetValue("bits_per_sample", out var bp) ? bp : null);
+                    long mn = MiniJson.Num(im.TryGetValue("min_value", out var mnp) ? mnp : null);
+                    long mx = MiniJson.Num(im.TryGetValue("max_value", out var mxp) ? mxp : null);
+                    long typ = MiniJson.Num(im.TryGetValue("type", out var tp) ? tp : null);
+                    long idx = MiniJson.Num(im.TryGetValue("index", out var ip) ? ip : null);
                     string label = _channels[(int)idx].Channel switch { 0 => "brightfield", 1 => "fluorescence", _ => "?" };
                     AddMetaRow($"[{idx}] {label}", $"{w}×{h}  {bits}-bit  min={mn} max={mx}  type={typ}");
                 }
             }
 
-            if (root.TryGetProperty("trailer_info", out var tr) && tr.ValueKind == JsonValueKind.Object)
+            var tr = root != null && root.TryGetValue("trailer_info", out var tv) ? MiniJson.Obj(tv) : null;
+            if (tr != null)
             {
-                AddMetaRow("Trailer full scale", tr.TryGetProperty("full_scale", out var fs) ? fs.ToString() : "");
-                AddMetaRow("Trailer exposure matches",
-                    tr.TryGetProperty("exposure_ms_matches_header", out var em) ? em.ToString() : "");
-                if (tr.TryGetProperty("Gray.pal", out var gp) && gp.ValueKind == JsonValueKind.String)
-                    AddMetaRow("LUT", gp.GetString() ?? "");
+                AddMetaRow("Trailer full scale", tr.TryGetValue("full_scale", out var fs) ? StrOf(fs) : "");
+                AddMetaRow("Trailer exposure matches", tr.TryGetValue("exposure_ms_matches_header", out var em) ? StrOf(em) : "");
+                if (tr.TryGetValue("Gray.pal", out var gp) && gp is string gps)
+                    AddMetaRow("LUT", gps);
             }
         }
         catch (Exception)
@@ -688,7 +698,7 @@ public partial class MainWindow : Window
         Point pos = e.GetPosition(CanvasHostGrid);
         double factor = e.Delta > 0 ? 1.12 : 1.0 / 1.12;
         double old = _zoom;
-        double next = Math.Clamp(old * factor, 0.02, 24.0);
+        double next = MathEx.Clamp(old * factor, 0.02, 24.0);
         if (Math.Abs(next - old) < 1e-6) return;
         factor = next / old;
         PanTf.X = pos.X - factor * (pos.X - PanTf.X);
@@ -774,7 +784,7 @@ public partial class MainWindow : Window
         double ch = CanvasHostGrid.ActualHeight;
         if (cw <= 0 || ch <= 0) return;
         double scale = Math.Min(cw / _wb.PixelWidth, ch / _wb.PixelHeight) * 0.96;
-        scale = Math.Clamp(scale, 0.02, 8.0);
+        scale = MathEx.Clamp(scale, 0.02, 8.0);
         double sw = _wb.PixelWidth * scale;
         double sh = _wb.PixelHeight * scale;
         ZoomTf.ScaleX = scale;
@@ -915,6 +925,7 @@ public partial class MainWindow : Window
         }
     }
 }
+
 
 
 
