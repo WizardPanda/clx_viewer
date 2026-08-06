@@ -135,6 +135,14 @@ The parser is pulled in as a git submodule and referenced via CMake
 `add_subdirectory`, so exported pixels stay byte-identical to the instrument's
 TIFFs.
 
+## License
+
+**GNU Affero General Public License v3 (AGPL-3.0-or-later)** — see [LICENSE](LICENSE)
+and [NOTICE](NOTICE).
+
+The `.clx` parser (`clinx_format_cpp` submodule) is MIT-licensed and miniz is
+public domain; both are AGPL-compatible and their notices are preserved.
+
 ## Notes
 
 - **Thumbnail cache**: after first registration Explorer may keep showing

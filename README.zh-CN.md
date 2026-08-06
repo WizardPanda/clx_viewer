@@ -107,6 +107,12 @@ docs/                   screenshot
 
 解析器作为 git 子模块引入，并通过 CMake `add_subdirectory` 引用，因此导出的像素与仪器 TIFF **逐字节一致**。
 
+## 许可证
+
+**GNU Affero General Public License v3（AGPL-3.0-or-later）** —— 见 [LICENSE](LICENSE) 与 [NOTICE](NOTICE)。
+
+`.clx` 解析器（`clinx_format_cpp` 子模块）采用 MIT 许可证，miniz 为公有领域；两者均与 AGPL 兼容，其版权声明已保留。
+
 ## 备注
 
 - **缩略图缓存**：首次注册后，资源管理器可能仍显示通用图标，直到缓存刷新 —— 运行 `.\tools\refresh-thumbnails.ps1`，或在文件夹中离开再返回。

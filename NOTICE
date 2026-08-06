@@ -1,0 +1,27 @@
+Clx Viewer
+Copyright (C) 2026 WizardPanda
+
+Clx Viewer is free software: you can redistribute it and/or modify it under
+the terms of the GNU Affero General Public License as published by the Free
+Software Foundation, either version 3 of the License, or (at your option) any
+later version.
+
+Clx Viewer is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+A PARTICULAR PURPOSE. See the GNU Affero General Public License for more
+details.
+
+You should have received a copy of the GNU Affero General Public License along
+with this program. If not, see <https://www.gnu.org/licenses/>.
+
+-------------------------------------------------------------------------------
+Third-party components (kept in the repository, each under its own license):
+
+- clinx_format_cpp  -- the .clx parser (git submodule at
+  third_party/clinx_format_cpp), Copyright (c) 2026 clxcpp contributors,
+  licensed under the MIT License. See its LICENSE file.
+- miniz            -- vendored deflate/inflate (public domain / Unlicense),
+  bundled inside clinx_format_cpp/third_party.
+
+The MIT-licensed and public-domain components are compatible with the AGPL-3.0
+for this project; their copyright notices are preserved.
