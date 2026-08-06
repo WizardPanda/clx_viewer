@@ -1,13 +1,28 @@
 # Captures ONLY the Clx Viewer window (never surrounding windows) using
 # PrintWindow, so no other app's content can ever leak into the shot.
+# Uses --clean so the sidebar/metadata panels (which show the file's folder
+# path) are hidden — the capture is safe to publish.
 param(
-    [string]$Exe = "ClxViewer.exe",
-    [string]$File = "Sample.clx",
-    [string]$Out = "docs/viewer-screenshot.png",
+    [string]$Exe = (Join-Path $PSScriptRoot "..\viewer\bin\x64\Release\net8.0-windows\ClxViewer.exe"),
+    [string]$File = "",
+    [string]$Out = (Join-Path (Split-Path $PSScriptRoot -Parent) "docs\viewer-screenshot.png"),
     [int]$WaitMs = 6000
 )
 
 Add-Type -AssemblyName System.Drawing
+$root = Split-Path $PSScriptRoot -Parent
+
+# If no file given, use a neutral demo (a submodule test sample copied to a
+# generic name in %TEMP%) so no real lab path/name appears in the shot.
+if ([string]::IsNullOrWhiteSpace($File)) {
+    $sample = Get-ChildItem (Join-Path $root "third_party\clinx_format_cpp\tests\data") -Filter *.clx |
+        Sort-Object Name -Descending | Select-Object -First 1 -ExpandProperty FullName
+    if (-not $sample) { throw "no sample .clx in the clinx_format_cpp test data" }
+    $demoDir = Join-Path $env:TEMP "clx-demo"
+    New-Item -ItemType Directory -Force -Path $demoDir | Out-Null
+    $File = Join-Path $demoDir "Demo_Western_Blot.clx"
+    Copy-Item -Force $sample $File
+}
 
 $src = @'
 using System;
@@ -26,7 +41,7 @@ public static class WC {
 '@
 Add-Type -TypeDefinition $src
 
-$p = Start-Process -FilePath $Exe -ArgumentList "`"$File`"" -PassThru
+$p = Start-Process -FilePath $Exe -ArgumentList "--clean", "`"$File`"" -PassThru
 Start-Sleep -Milliseconds $WaitMs
 if ($p.HasExited) { "PROCESS EXITED, code=$($p.ExitCode)"; exit 1 }
 
@@ -41,7 +56,6 @@ $pidT = [uint32]$p.Id
 
 if ($target -eq [IntPtr]::Zero) { "no window found"; Stop-Process -Id $p.Id -Force; exit 1 }
 
-# Bring to front so the window renders normally, then let it settle.
 [void][WC]::SetForegroundWindow($target)
 [void][WC]::BringWindowToTop($target)
 Start-Sleep -Milliseconds 1500
@@ -50,8 +64,6 @@ $r = New-Object WC+RECT
 [void][WC]::GetWindowRect($target,[ref]$r)
 $w = $r.R-$r.L; $h = $r.B-$r.T
 
-# PrintWindow renders the window's own content into the HDC, ignoring anything
-# that overlaps it on screen.
 $bmp = New-Object System.Drawing.Bitmap($w, $h)
 $g = [System.Drawing.Graphics]::FromImage($bmp)
 $hdc = $g.GetHdc()

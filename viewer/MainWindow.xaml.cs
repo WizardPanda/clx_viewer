@@ -65,6 +65,14 @@ public partial class MainWindow : Window
         SidebarToggle.Unchecked += (_, _) => Sidebar.Visibility = Visibility.Collapsed;
         MetaToggle.Checked += (_, _) => MetaPanel.Visibility = Visibility.Visible;
         MetaToggle.Unchecked += (_, _) => MetaPanel.Visibility = Visibility.Collapsed;
+
+        if (App.CleanView)
+        {
+            Sidebar.Visibility = Visibility.Collapsed;
+            MetaPanel.Visibility = Visibility.Collapsed;
+            SidebarToggle.IsChecked = false;
+            MetaToggle.IsChecked = false;
+        }
     }
 
     // ------------------------------------------------------------------ open
