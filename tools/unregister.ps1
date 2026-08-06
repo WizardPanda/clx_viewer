@@ -1,6 +1,6 @@
 # Removes the Clx Viewer shell integration (thumbnail handler + file association).
 param(
-    [string]$Dll = (Join-Path $PSScriptRoot "build-native\bin\ClinxThumbnailProvider.dll")
+    [string]$Dll = (Join-Path (Split-Path $PSScriptRoot -Parent) "build-native\bin\ClinxThumbnailProvider.dll")
 )
 
 $ErrorActionPreference = "Stop"

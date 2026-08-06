@@ -3,14 +3,15 @@
 #   * .clx default file association -> opens the viewer
 #   * the .clx file-type icon (uses the viewer exe's embedded icon)
 param(
-    [string]$Dll = (Join-Path $PSScriptRoot "build-native\bin\ClinxThumbnailProvider.dll"),
+    [string]$Dll = (Join-Path (Split-Path $PSScriptRoot -Parent) "build-native\bin\ClinxThumbnailProvider.dll"),
     [string]$ViewerExe = $null
 )
 
 $ErrorActionPreference = "Stop"
+$root = Split-Path $PSScriptRoot -Parent
 
 if (-not $ViewerExe) {
-    $ViewerExe = Get-ChildItem -Path (Join-Path $PSScriptRoot "viewer\bin") -Recurse -Filter ClxViewer.exe -ErrorAction SilentlyContinue |
+    $ViewerExe = Get-ChildItem -Path (Join-Path $root "viewer\bin") -Recurse -Filter ClxViewer.exe -ErrorAction SilentlyContinue |
         Sort-Object LastWriteTime -Descending | Select-Object -First 1 -ExpandProperty FullName
 }
 if (-not $Dll -or -not (Test-Path -LiteralPath $Dll)) { throw "thumbnail DLL not found: $Dll" }

@@ -9,8 +9,8 @@ instrument's own exports.
 ```
 clx_viewer/
   CMakeLists.txt              native build (clxreader + shellext; adds third_party/clinx_format_cpp)
-  build.ps1                   one-command build
-  register.ps1 / unregister.ps1   Explorer integration (HKCU, no admin)
+  build.ps1                   (now tools/) one-command build
+  register.ps1 / unregister.ps1   (now tools/) Explorer integration (HKCU, no admin)
   assets/clxviewer.ico        brand icon (rounded #012c5d "Clx")
   native/clxreader/           C-ABI DLL over clxcpp  -> clxreader.dll
   native/shellext/            IThumbnailProvider COM DLL -> ClinxThumbnailProvider.dll
@@ -90,8 +90,8 @@ Requirements: VS 2022 Build Tools (MSVC + CMake + Ninja), .NET 8 SDK, and the
 (`git submodule update --init --recursive`).
 
 ```powershell
-.\build.ps1             # native + viewer; stages clxreader.dll next to the exe
-.\register.ps1          # thumbnail handler + .clx file association
+.\tools\build.ps1             # native + viewer; stages clxreader.dll next to the exe
+.\tools\register.ps1          # thumbnail handler + .clx file association
 ```
 
 Artifacts:
@@ -104,7 +104,7 @@ Artifacts:
 
 Run the viewer: `ClxViewer.exe <files.clx …>` (or open/drop).
 
-To undo shell integration: `.\unregister.ps1`.
+To undo shell integration: `.\tools\unregister.ps1`.
 
 ## Notes
 

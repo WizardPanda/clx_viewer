@@ -14,8 +14,8 @@ captures, plus an Explorer thumbnail extension — all built on the
 ## Quick start
 
 ```powershell
-.\build.ps1        # native (clxreader + thumbnail provider) + WPF viewer
-.\register.ps1     # Explorer thumbnail handler + .clx file association
+.\tools\build.ps1    # native (clxreader + thumbnail provider) + WPF viewer
+.\tools\register.ps1 # Explorer thumbnail handler + .clx file association
 .\viewer\bin\x64\Release\net8.0-windows\ClxViewer.exe  <capture.clx>
 ```
 

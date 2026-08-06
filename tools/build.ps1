@@ -9,7 +9,7 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
-$root = $PSScriptRoot
+$root = Split-Path $PSScriptRoot -Parent
 $vcvars = "C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Auxiliary\Build\vcvars64.bat"
 if (-not (Test-Path -LiteralPath $vcvars)) {
     $vcvars = "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvars64.bat"
@@ -32,7 +32,7 @@ if (-not $SkipNative) {
 }
 
 # 2. App / file icon
-& (Join-Path $root "tools\make-icon.ps1") -OutPath (Join-Path $root "assets\clxviewer.ico")
+& (Join-Path $PSScriptRoot "make-icon.ps1") -OutPath (Join-Path $root "assets\clxviewer.ico")
 
 # 3. WPF viewer
 dotnet build (Join-Path $root "viewer\ClxViewer.csproj") -c $Config -p:Platform=x64
@@ -55,5 +55,5 @@ Write-Output "Build OK."
 Write-Output "  Viewer : $exeDir\ClxViewer.exe"
 Write-Output "  Shell  : $root\$BuildDir\bin\ClinxThumbnailProvider.dll"
 if ($Register) {
-    & (Join-Path $root "register.ps1")
+    & (Join-Path $PSScriptRoot "register.ps1")
 }
