@@ -6,8 +6,6 @@ built on the [`clxcpp`](https://github.com/WizardPanda/clinx_format_cpp) C++
 parser, so exported image data stays **pixel-identical** to the instrument's
 own files.
 
-![Clx Viewer](docs/viewer-screenshot.png)
-
 ## Features
 
 - **Open & navigate** `.clx` files — multi-select Open, folder file list,
@@ -105,7 +103,6 @@ third_party/clinx_format_cpp/   clxcpp parser (git submodule)
 viewer/                 WPF application (targets .NET Framework 4.8)
 tools/                  build / register / unregister / refresh-thumbnails / icon scripts
 assets/                 brand icon
-docs/                   screenshot
 ```
 
 The parser is pulled in as a git submodule and referenced via CMake
@@ -124,4 +121,5 @@ TIFFs.
   all three views without showing the window.
 - The `.clx` format is reverse-engineered (see `clinx_format_cpp/docs`); it is
   validated against real instrument samples in the clxcpp test suite.
+
 
