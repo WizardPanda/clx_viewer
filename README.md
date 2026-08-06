@@ -6,8 +6,6 @@ built on the [`clxcpp`](https://github.com/WizardPanda/clinx_format_cpp) C++
 parser, so exported image data stays **pixel-identical** to the instrument's
 own files.
 
-![Clx Viewer](docs/viewer-screenshot.png)
-
 ## Features
 
 - **Open & navigate** `.clx` files — multi-select Open, folder file list,
@@ -126,7 +124,6 @@ third_party/clinx_format_cpp/   clxcpp parser (git submodule)
 viewer/                 .NET 8 WPF application
 tools/                  build / register / unregister / refresh-thumbnails / icon scripts
 assets/                 brand icon
-docs/                   screenshot
 ```
 
 The parser is pulled in as a git submodule and referenced via CMake
