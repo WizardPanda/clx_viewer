@@ -1,5 +1,7 @@
 # Clx Viewer
 
+> **English** | [简体中文](README.zh-CN.md)
+
 A lightweight, fast Windows viewer for **Clinx `.clx` chemiluminescence
 captures** — an in-app image viewer plus an Explorer thumbnail extension — all
 built on the [`clxcpp`](https://github.com/WizardPanda/clinx_format_cpp) C++
