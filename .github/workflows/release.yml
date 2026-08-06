@@ -40,19 +40,18 @@ jobs:
         shell: pwsh
         run: ./installer/prepare.ps1 -AppVersion "${{ steps.version.outputs.ver }}" -SkipNative
 
-      - name: Create release
-        uses: softprops/action-gh-release@v2
+      - name: Upload FD/SC artifacts
+        uses: actions/upload-artifact@v4
         with:
-          files: |
+          name: clx-fdsc
+          path: |
             dist/ClxViewer-*-installer.exe
             dist/ClxViewer-*-portable.zip
-          generate_release_notes: true
+          retention-days: 1
 
-  # .NET Framework 4.8 variant (net48 branch): builds the native DLLs and the
-  # net48 viewer, then produces a net48 installer + portable zip, attached to
-  # the same release.
+  # .NET Framework 4.8 variant (net48 branch): native DLLs + net48 viewer,
+  # packaged as its own installer + portable zip.
   build-net48:
-    needs: build
     runs-on: windows-latest
     steps:
       - name: Checkout net48 (with submodules)
@@ -80,8 +79,39 @@ jobs:
         shell: pwsh
         run: ./installer/prepare.ps1 -AppVersion "${{ steps.version.outputs.ver }}" -SkipNative -Net48
 
-      - name: Upload net48 artifacts to release
-        run: gh release upload "${{ github.ref_name }}" \
-                dist/ClxViewer-${{ steps.version.outputs.ver }}-win-x64-net48-installer.exe \
-                dist/ClxViewer-${{ steps.version.outputs.ver }}-win-x64-net48-portable.zip \
-                --clobber
+      - name: Upload net48 artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: clx-net48
+          path: |
+            dist/ClxViewer-*-net48-installer.exe
+            dist/ClxViewer-*-net48-portable.zip
+          retention-days: 1
+
+  # Assemble the release only after both build jobs succeed. All artifacts are
+  # produced by CI; nothing is uploaded from a local machine.
+  release:
+    needs: [build, build-net48]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download FD/SC artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: clx-fdsc
+          path: rel
+          merge-multiple: true
+
+      - name: Download net48 artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: clx-net48
+          path: rel
+          merge-multiple: true
+
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            rel/ClxViewer-*-installer.exe
+            rel/ClxViewer-*-portable.zip
+          generate_release_notes: true
