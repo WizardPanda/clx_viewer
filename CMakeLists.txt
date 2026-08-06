@@ -16,11 +16,13 @@ else()
   add_compile_options(-Wall -Wextra)
 endif()
 
-# Reference the clxcpp library (C++ port of the Clinx .clx parser).
-# Kept as the source of truth so parsing stays pixel-identical to it.
-set(CLXCPP_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../clinx_format_cpp")
+# Reference the clxcpp library (C++ port of the Clinx .clx parser), pulled in
+# as a git submodule. Kept as the source of truth so parsing stays
+# pixel-identical to it.
+set(CLXCPP_DIR "${CMAKE_CURRENT_SOURCE_DIR}/third_party/clinx_format_cpp")
 if(NOT EXISTS "${CLXCPP_DIR}/CMakeLists.txt")
-  message(FATAL_ERROR "clxcpp not found at ${CLXCPP_DIR}. Set CLXCPP_DIR.")
+  message(FATAL_ERROR
+    "clxcpp not found at ${CLXCPP_DIR}. Run: git submodule update --init --recursive")
 endif()
 add_subdirectory("${CLXCPP_DIR}" clxcpp)
 

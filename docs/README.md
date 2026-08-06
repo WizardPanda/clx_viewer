@@ -2,13 +2,13 @@
 
 A lightweight, fast Windows viewer for **Clinx `.clx` chemiluminescence
 captures**, with an Explorer thumbnail extension. Built on the
-[`clxcpp`](https://github.com/) C++ parser (in the sibling
-`clinx_format_cpp` tree) so image data stays **pixel-identical** to the
+[`clxcpp`](https://github.com/WizardPanda/clinx_format_cpp) C++ parser (pulled
+in as a git submodule) so image data stays **pixel-identical** to the
 instrument's own exports.
 
 ```
 clx_viewer/
-  CMakeLists.txt              native build (clxreader + shellext; adds ../clinx_format_cpp)
+  CMakeLists.txt              native build (clxreader + shellext; adds third_party/clinx_format_cpp)
   build.ps1                   one-command build
   register.ps1 / unregister.ps1   Explorer integration (HKCU, no admin)
   assets/clxviewer.ico        brand icon (rounded #012c5d "Clx")
@@ -70,7 +70,8 @@ thumbnails"** folder option.
 ## Building
 
 Requirements: VS 2022 Build Tools (MSVC + CMake + Ninja), .NET 8 SDK, and the
-`clinx_format_cpp` repo next to this folder.
+`clinx_format_cpp` submodule checked out
+(`git submodule update --init --recursive`).
 
 ```powershell
 .\build.ps1             # native + viewer; stages clxreader.dll next to the exe
