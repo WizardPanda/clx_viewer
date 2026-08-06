@@ -51,8 +51,24 @@ clx_viewer/
   * **Processed PNG** — the current view rendered with the current min/max,
     named `<stem>_<view>_min<low>_max<high>.png` (`view` = fluo/bf/merged).
 * **Zoom & pan** the image (wheel zoom around the cursor, drag to pan,
-  double-click to fit, `F` to fit, `+`/`-` to zoom). The status bar shows the
+  double-click to fit, `+`/`-` to zoom). The status bar shows the
   raw pixel value under the cursor.
+
+## Keyboard shortcuts
+
+| Shortcut | Action |
+|---|---|
+| `Ctrl+O` | Open `.clx` files |
+| `Ctrl+E` | Export the current view as PNG |
+| `Ctrl+Shift+E` | Export raw 16-bit TIFF(s) |
+| `Alt+E` | Choose export folder |
+| `←` / `→` | Previous / next file |
+| `F` / `B` / `M` | Fluo / Bright / Merged view |
+| `A` | Auto min/max |
+| `I` | Invert fluo colors |
+| `Ctrl+W` | Close |
+
+(A `?`/keyboard button on the toolbar shows the same cheat sheet.)
 
 ## Explorer thumbnail previews
 

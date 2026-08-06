@@ -793,42 +793,60 @@ public partial class MainWindow : Window
 
     private void OnPreviewKeyDown(object sender, KeyEventArgs e)
     {
-        if (e.Key == Key.O && Keyboard.Modifiers.HasFlag(ModifierKeys.Control))
+        var mods = Keyboard.Modifiers;
+        bool ctrl = mods.HasFlag(ModifierKeys.Control);
+        bool alt = mods.HasFlag(ModifierKeys.Alt);
+        bool shift = mods.HasFlag(ModifierKeys.Shift);
+        bool inTextBox = Keyboard.FocusedElement is TextBox;
+
+        // Ctrl+W: close
+        if (ctrl && e.Key == Key.W) { Close(); e.Handled = true; return; }
+        // Ctrl+O: open files
+        if (ctrl && e.Key == Key.O) { OnOpen(this, new RoutedEventArgs()); e.Handled = true; return; }
+        // Ctrl+Shift+E: raw TIFF
+        if (ctrl && shift && e.Key == Key.E) { ExportRawToDir(); e.Handled = true; return; }
+        // Ctrl+E: export PNG
+        if (ctrl && !shift && e.Key == Key.E) { ExportPngToDir(); e.Handled = true; return; }
+        // Alt+E: choose export folder
+        if (alt && e.Key == Key.E) { OnChooseExportDir(this, new RoutedEventArgs()); e.Handled = true; return; }
+
+        if (inTextBox) return;  // don't hijack arrows/letters while editing
+
+        // File navigation (arrows, no Ctrl/Alt)
+        if (!ctrl && !alt && e.Key == Key.Left) { Navigate(-1); e.Handled = true; return; }
+        if (!ctrl && !alt && e.Key == Key.Right) { Navigate(+1); e.Handled = true; return; }
+
+        // Plain letters (no modifiers)
+        if (mods == ModifierKeys.None)
         {
-            OnOpen(this, new RoutedEventArgs());
-            e.Handled = true;
+            switch (e.Key)
+            {
+                case Key.F: SelectView(ViewMode.Fluo); e.Handled = true; break;
+                case Key.B: SelectView(ViewMode.Bright); e.Handled = true; break;
+                case Key.M: SelectView(ViewMode.Merged); e.Handled = true; break;
+                case Key.A: OnAuto(this, new RoutedEventArgs()); e.Handled = true; break;
+                case Key.I: InvertBtn.IsChecked = !(InvertBtn.IsChecked == true); e.Handled = true; break;
+            }
         }
-        else if (e.Key == Key.Left)
-        {
-            Navigate(-1); e.Handled = true;
-        }
-        else if (e.Key == Key.Right)
-        {
-            Navigate(+1); e.Handled = true;
-        }
-        else if (e.Key == Key.A)
-        {
-            OnAuto(this, new RoutedEventArgs()); e.Handled = true;
-        }
-        else if (e.Key == Key.I)
-        {
-            InvertBtn.IsChecked = !(InvertBtn.IsChecked == true); e.Handled = true;
-        }
-        else if (e.Key == Key.F)
-        {
-            FitToWindow(); e.Handled = true;
-        }
-        else if (e.Key == Key.M)
-        {
-            MetaToggle.IsChecked = !(MetaToggle.IsChecked == true); e.Handled = true;
-        }
-        else if (e.Key == Key.Add || e.Key == Key.OemPlus)
+
+        // Zoom
+        if (e.Key == Key.Add || e.Key == Key.OemPlus)
         {
             OnCanvasWheel(this, new MouseWheelEventArgs(Mouse.PrimaryDevice, Environment.TickCount, +120)); e.Handled = true;
         }
         else if (e.Key == Key.Subtract || e.Key == Key.OemMinus)
         {
             OnCanvasWheel(this, new MouseWheelEventArgs(Mouse.PrimaryDevice, Environment.TickCount, -120)); e.Handled = true;
+        }
+    }
+
+    private void SelectView(ViewMode mode)
+    {
+        switch (mode)
+        {
+            case ViewMode.Fluo: ViewFluo.IsChecked = true; break;
+            case ViewMode.Bright: ViewBright.IsChecked = true; break;
+            case ViewMode.Merged: ViewMerged.IsChecked = true; break;
         }
     }
 

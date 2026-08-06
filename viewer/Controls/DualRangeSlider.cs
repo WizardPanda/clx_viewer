@@ -91,11 +91,10 @@ public class DualRangeSlider : FrameworkElement
         dc.DrawRoundedRectangle(new SolidColorBrush(Color.FromRgb(0x2E, 0x2E, 0x33)),
             null, new Rect(left, trackY, right - left, trackH), trackH / 2, trackH / 2);
 
-        // Active range (accent gradient)
+        // Active range (solid theme accent)
         if (hx - lx > 0.5)
         {
-            var fill = new LinearGradientBrush(Color.FromRgb(0x2B, 0x8A, 0xE0),
-                Color.FromRgb(0x0A, 0x4C, 0x94), 90.0);
+            var fill = new SolidColorBrush(Color.FromRgb(0x0F, 0x6C, 0xBB));
             dc.DrawRoundedRectangle(fill, null, new Rect(lx, trackY, hx - lx, trackH),
                 trackH / 2, trackH / 2);
         }
@@ -119,7 +118,7 @@ public class DualRangeSlider : FrameworkElement
         Pen border;
         if (active)
         {
-            fill = new SolidColorBrush(Color.FromRgb(0xC6, 0xE2, 0xF7));
+            fill = new SolidColorBrush(Color.FromRgb(0xD9, 0xE7, 0xF5));
             border = new Pen(new SolidColorBrush(Color.FromRgb(0x0F, 0x6C, 0xBB)), 1.5);
         }
         else if (hovered)

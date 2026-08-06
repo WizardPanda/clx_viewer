@@ -408,11 +408,11 @@
                 <Border Background="#2D2D30" CornerRadius="6" Padding="2">
                     <StackPanel Orientation="Horizontal">
                         <RadioButton x:Name="ViewFluo" Style="{StaticResource SegRadio}" Content="Fluo"
-                                     GroupName="view" IsChecked="True" Checked="OnViewChecked"/>
+                                     GroupName="view" IsChecked="True" Checked="OnViewChecked" ToolTip="Fluorescence (F)"/>
                         <RadioButton x:Name="ViewBright" Style="{StaticResource SegRadio}" Content="Bright"
-                                     GroupName="view" Checked="OnViewChecked"/>
+                                     GroupName="view" Checked="OnViewChecked" ToolTip="Brightfield (B)"/>
                         <RadioButton x:Name="ViewMerged" Style="{StaticResource SegRadio}" Content="Merged"
-                                     GroupName="view" Checked="OnViewChecked"/>
+                                     GroupName="view" Checked="OnViewChecked" ToolTip="Merged (M)"/>
                     </StackPanel>
                 </Border>
 
@@ -420,7 +420,7 @@
 
                 <ToggleButton x:Name="InvertBtn" Style="{StaticResource SegToggle}" Content="Invert"
                               IsChecked="True" Checked="OnInvertToggled" Unchecked="OnInvertToggled"
-                              ToolTip="Reverse fluo colors (western-blot look)"/>
+                              ToolTip="Reverse fluo colors (western-blot look) (I)"/>
 
                 <Border Width="1" Background="{StaticResource BrBorder}" Height="20" Margin="8,0"/>
 
@@ -428,25 +428,28 @@
                     <TextBlock Text="Auto" VerticalAlignment="Center"/>
                 </Button>
                 <Button Style="{StaticResource ToolButton}" x:Name="ExportRawBtn" Click="OnExportRaw" IsEnabled="False"
-                        ToolTip="Export raw 16-bit TIFF(s) next to the .clx file (overwrites)">
+                        ToolTip="Export raw 16-bit TIFF(s) next to the .clx file (overwrites) (Ctrl+Shift+E)">
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="&#xE898;" FontFamily="Segoe MDL2 Assets" FontSize="12" VerticalAlignment="Center"/>
                         <TextBlock Text="Raw TIFF" Margin="6,0,0,0" VerticalAlignment="Center"/>
                     </StackPanel>
                 </Button>
                 <Button Style="{StaticResource ToolButton}" x:Name="ExportPngBtn" Click="OnExportPng" IsEnabled="False"
-                        ToolTip="Export the current view as 8-bit PNG with current min/max">
+                        ToolTip="Export the current view as 8-bit PNG with current min/max (Ctrl+E)">
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="&#xE91B;" FontFamily="Segoe MDL2 Assets" FontSize="12" VerticalAlignment="Center"/>
                         <TextBlock Text="PNG" Margin="6,0,0,0" VerticalAlignment="Center"/>
                     </StackPanel>
                 </Button>
                 <Button Style="{StaticResource ToolButton}" x:Name="ExportDirBtn" Click="OnChooseExportDir"
-                        ToolTip="Choose export folder (defaults to next to the .clx file)">
+                        ToolTip="Choose export folder (defaults to next to the .clx file) (Alt+E)">
                     <TextBlock Text="&#xE8B7;" FontFamily="Segoe MDL2 Assets" FontSize="12" VerticalAlignment="Center"/>
                 </Button>
 
                 <Border Width="1" Background="{StaticResource BrBorder}" Height="20" Margin="8,0"/>
+
+                <ToggleButton x:Name="ShortcutSheetBtn" Style="{StaticResource SegToggle}" Content="&#xE765;"
+                              FontFamily="Segoe MDL2 Assets" ToolTip="Keyboard shortcuts"/>
 
                 <ToggleButton x:Name="SidebarToggle" Style="{StaticResource SegToggle}" Content="&#xE700;"
                               IsChecked="True" FontFamily="Segoe MDL2 Assets" ToolTip="Toggle file list"/>
@@ -454,6 +457,92 @@
                               IsChecked="True" FontFamily="Segoe MDL2 Assets" ToolTip="Toggle metadata panel"/>
             </StackPanel>
         </Border>
+
+        <!-- Keyboard shortcut cheat sheet -->
+        <Popup IsOpen="{Binding IsChecked, ElementName=ShortcutSheetBtn}"
+               PlacementTarget="{Binding ElementName=ShortcutSheetBtn}" Placement="Bottom"
+               StaysOpen="False" AllowsTransparency="True" PopupAnimation="Fade">
+            <Border Background="#252526" BorderBrush="{StaticResource BrBorder}" BorderThickness="1"
+                    CornerRadius="6" Margin="0,4,0,0" Width="330">
+                <StackPanel Margin="14,12,14,10">
+                    <TextBlock Text="KEYBOARD SHORTCUTS" FontSize="10.5" FontWeight="SemiBold"
+                               Foreground="{StaticResource BrDim}" Margin="0,0,0,6"/>
+
+                    <Grid Margin="0,3,0,3">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="120"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="Ctrl+O" Foreground="#5EA6E0" FontSize="11.5"/>
+                        <TextBlock Grid.Column="1" Text="Open .clx files" Foreground="{StaticResource BrText1}" FontSize="11.5"/>
+                    </Grid>
+                    <Grid Margin="0,3,0,3">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="120"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="Ctrl+E" Foreground="#5EA6E0" FontSize="11.5"/>
+                        <TextBlock Grid.Column="1" Text="Export PNG (current view)" Foreground="{StaticResource BrText1}" FontSize="11.5"/>
+                    </Grid>
+                    <Grid Margin="0,3,0,3">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="120"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="Ctrl+Shift+E" Foreground="#5EA6E0" FontSize="11.5"/>
+                        <TextBlock Grid.Column="1" Text="Export raw 16-bit TIFF" Foreground="{StaticResource BrText1}" FontSize="11.5"/>
+                    </Grid>
+                    <Grid Margin="0,3,0,3">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="120"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="Alt+E" Foreground="#5EA6E0" FontSize="11.5"/>
+                        <TextBlock Grid.Column="1" Text="Choose export folder" Foreground="{StaticResource BrText1}" FontSize="11.5"/>
+                    </Grid>
+                    <Grid Margin="0,3,0,3">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="120"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="&#x2190; / &#x2192;" Foreground="#5EA6E0" FontSize="11.5"/>
+                        <TextBlock Grid.Column="1" Text="Previous / next file" Foreground="{StaticResource BrText1}" FontSize="11.5"/>
+                    </Grid>
+                    <Grid Margin="0,3,0,3">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="120"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="F / B / M" Foreground="#5EA6E0" FontSize="11.5"/>
+                        <TextBlock Grid.Column="1" Text="Fluo / Bright / Merged" Foreground="{StaticResource BrText1}" FontSize="11.5"/>
+                    </Grid>
+                    <Grid Margin="0,3,0,3">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="120"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="A" Foreground="#5EA6E0" FontSize="11.5"/>
+                        <TextBlock Grid.Column="1" Text="Auto min/max" Foreground="{StaticResource BrText1}" FontSize="11.5"/>
+                    </Grid>
+                    <Grid Margin="0,3,0,3">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="120"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="I" Foreground="#5EA6E0" FontSize="11.5"/>
+                        <TextBlock Grid.Column="1" Text="Invert fluo colors" Foreground="{StaticResource BrText1}" FontSize="11.5"/>
+                    </Grid>
+                    <Grid Margin="0,3,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="120"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="Ctrl+W" Foreground="#5EA6E0" FontSize="11.5"/>
+                        <TextBlock Grid.Column="1" Text="Close" Foreground="{StaticResource BrText1}" FontSize="11.5"/>
+                    </Grid>
+                </StackPanel>
+            </Border>
+        </Popup>
 
         <!-- ============ Main ============ -->
         <Grid Grid.Row="2">
