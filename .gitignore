@@ -1,0 +1,11 @@
+# Native build output
+build-native/
+build/
+
+# .NET build output
+viewer/bin/
+viewer/obj/
+
+# Misc
+*.user
+*.obj
