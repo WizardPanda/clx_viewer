@@ -9,3 +9,5 @@ viewer/obj/
 # Misc
 *.user
 *.obj
+
+dist/

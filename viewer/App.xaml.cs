@@ -11,6 +11,9 @@ public partial class App : Application
     private const string MutexName = "ClxViewer.SingleInstance";
     private const string PipeName = "ClxViewer.OpenFiles";
 
+    /// <summary>Starts with the file list and metadata panels hidden (used for clean screenshots).</summary>
+    public static bool CleanView { get; private set; }
+
     private Mutex? _mutex;
     private MainWindow? _main;
     private Thread? _pipeThread;
@@ -18,6 +21,7 @@ public partial class App : Application
     protected override void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
+        CleanView = e.Args.Any(a => a.Equals("--clean", StringComparison.OrdinalIgnoreCase));
         _mutex = new Mutex(true, MutexName, out bool createdNew);
         if (!createdNew)
         {
