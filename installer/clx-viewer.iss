@@ -22,14 +22,24 @@
 #define ClxClsid "{{6CF20D3A-B6A8-4DCB-8305-973E1B65E7B6}"
 #define ThumbKey "{{E357FCCD-A995-4576-B01F-234630154E96}"
 
+; The net48 variant (.NET Framework 4.8) is a separate product: distinct AppId
+; and install directory so it doesn't collide with the .NET 8 build.
+#ifdef Net48
+  #define ClxAppId "{{191EE1BB-8891-4CBE-9C9A-98149F59E9AA}"
+  #define ClxDirName "Clx Viewer (Net48)"
+#else
+  #define ClxAppId "{{B9C8A2AC-7801-45C0-97A5-93A490686C17}"
+  #define ClxDirName "Clx Viewer"
+#endif
+
 [Setup]
-AppId={{B9C8A2AC-7801-45C0-97A5-93A490686C17}
+AppId={#ClxAppId}
 AppName={#AppName}
 AppVersion={#AppVersion}
 AppPublisher=WizardPanda
 AppPublisherURL=https://github.com/WizardPanda/clx_viewer
-DefaultDirName={localappdata}\Programs\Clx Viewer
-DefaultGroupName=Clx Viewer
+DefaultDirName={localappdata}\Programs\{#ClxDirName}
+DefaultGroupName={#ClxDirName}
 DisableProgramGroupPage=yes
 PrivilegesRequired=lowest
 PrivilegesRequiredOverridesAllowed=dialog
