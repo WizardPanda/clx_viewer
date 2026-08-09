@@ -42,6 +42,6 @@ public static class ShellNotifyP {
   public static extern void Notify(int wEventId, uint uFlags, IntPtr dwItem1, IntPtr dwItem2);
 }
 '@
-[ShellNotifyP]::Notify(0x8000, 0, [IntPtr]::Zero, [IntPtr]::Zero)
+[ShellNotifyP]::Notify(0x08000000, 0, [IntPtr]::Zero, [IntPtr]::Zero)
 
 Write-Host "Registered Clx Viewer shell integration for $dir"
