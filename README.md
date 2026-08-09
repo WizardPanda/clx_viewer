@@ -53,11 +53,14 @@ Prebuilt artifacts are attached to each [GitHub release](https://github.com/Wiza
 | `*-sc-installer.exe` | Per-user installer that bundles the .NET 8 runtime (no dependency) |
 | `*-fd-portable.zip` | Portable folder; needs the .NET 8 Desktop Runtime |
 | `*-sc-portable.zip` | Portable folder with the .NET 8 runtime bundled |
+| `*-net48-installer.exe` | Per-user installer for the .NET Framework 4.8 variant (separate product, "Clx Viewer (Net48)") |
+| `*-net48-portable.zip` | Portable folder for the .NET Framework 4.8 variant |
 
 Installers register the Explorer thumbnail handler and the `.clx` file association
-under the current user (no admin) and ship a proper uninstaller. The portable
-zips include `register-portable.ps1` / `unregister-portable.ps1` for optional
-shell integration.
+under the current user (no admin) and ship a proper uninstaller. Portable builds
+register themselves automatically on the first normal launch (no script needed);
+`ClxViewer.exe /register` and `ClxViewer.exe /unregister` (or the included
+`register-portable.ps1` / `unregister-portable.ps1`) do it manually.
 
 ## Build from source
 
@@ -67,8 +70,9 @@ git submodule update --init --recursive
 .\viewer\bin\x64\Release\net8.0-windows\ClxViewer.exe  <capture.clx>
 ```
 
-Run `.\tools\register.ps1` to set up shell integration (or
-`.\tools\unregister.ps1` to undo it).
+The viewer registers its thumbnail provider + `.clx` association automatically on
+launch (per-user, no admin). `.\tools\register.ps1` / `.\tools\unregister.ps1` do
+it manually if you prefer.
 
 ### Release artifacts (installers + portable zips)
 
