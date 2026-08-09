@@ -22,12 +22,34 @@ public partial class App : Application
     {
         base.OnStartup(e);
         CleanView = e.Args.Any(a => a.Equals("--clean", StringComparison.OrdinalIgnoreCase));
+
+        // Headless shell-integration actions (alternative to register-portable.ps1).
+        if (e.Args.Any(a => a.Equals("/register", StringComparison.OrdinalIgnoreCase)))
+        {
+            ShellIntegration.TryRegisterIfNeeded();
+            Shutdown();
+            return;
+        }
+        if (e.Args.Any(a => a.Equals("/unregister", StringComparison.OrdinalIgnoreCase)))
+        {
+            ShellIntegration.TryUnregister();
+            Shutdown();
+            return;
+        }
+
         _mutex = new Mutex(true, MutexName, out bool createdNew);
         if (!createdNew)
         {
             ForwardToPrimary(e.Args);
             Shutdown();
             return;
+        }
+
+        // Self-register the thumbnail provider so a portable build needs no script.
+        bool headless = CleanView || e.Args.Any(a => a.StartsWith("--selftest"));
+        if (!headless)
+        {
+            ShellIntegration.TryRegisterIfNeeded();
         }
 
         StartPipeServer();

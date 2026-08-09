@@ -23,6 +23,6 @@ public static class ShellNotifyU {
   public static extern void Notify(int wEventId, uint uFlags, IntPtr dwItem1, IntPtr dwItem2);
 }
 '@
-[ShellNotifyU]::Notify(0x8000, 0, [IntPtr]::Zero, [IntPtr]::Zero)
+[ShellNotifyU]::Notify(0x08000000, 0, [IntPtr]::Zero, [IntPtr]::Zero)
 
 Write-Host "Removed Clx Viewer shell integration."
