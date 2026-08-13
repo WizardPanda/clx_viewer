@@ -83,6 +83,12 @@ Root: HKCU; Subkey: "Software\Classes\.clx\OpenWithProgids"; ValueType: string; 
 Root: HKCU; Subkey: "Software\Classes\ClxViewer.Document"; ValueType: string; ValueName: ""; ValueData: "Clinx CLX Capture"; Flags: uninsdeletekey
 Root: HKCU; Subkey: "Software\Classes\ClxViewer.Document\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\ClxViewer.exe"" ""%1"""; Flags: uninsdeletekey
 
+; Remove files from older releases that are no longer shipped. Inno only
+; overwrites/removes files it knows about; obsolete files would otherwise linger.
+; ClxViewer.pdb shipped in <= 1.0.0 but was dropped (debug symbols).
+[InstallDelete]
+Type: files; Name: "{app}\*.pdb"
+
 [Code]
 procedure SHChangeNotify(wEventId: DWORD; uFlags: DWORD; dwItem1: DWORD; dwItem2: DWORD);
   external 'SHChangeNotify@shell32.dll stdcall';
